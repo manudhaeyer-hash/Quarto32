@@ -148,7 +148,7 @@ public class Viewer {
         for (int i = 0; i < 32; i++) {
             Group group = pieceGroups.get(i);
             if (i == pieceToPlace) {
-                group.setX(1675, Curve.EASE_IN_AND_OUT).setY(870, Curve.EASE_IN_AND_OUT).setScale(1.2).setZIndex(100);
+                group.setX(1675, Curve.EASE_IN_AND_OUT).setY(880, Curve.EASE_IN_AND_OUT).setScale(1.6).setZIndex(100);
                 group.setAlpha(1.0);
             } else if (board.getAvailablePieces().contains(i)) {
                 int col = i % 8;
