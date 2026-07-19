@@ -1,0 +1,11 @@
+target/
+out/
+*.class
+# binaire du boss C++ compile localement
+config/boss
+config/boss.exe
+config/**/boss
+config/**/boss.exe
+.idea/
+*.iml
+.vscode/

@@ -1,0 +1,232 @@
+package com.codingame.game;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.codingame.game.engine.Board;
+import com.codingame.game.engine.Piece;
+import com.codingame.gameengine.core.MultiplayerGameManager;
+import com.codingame.gameengine.module.entities.Curve;
+import com.codingame.gameengine.module.entities.GraphicEntityModule;
+import com.codingame.gameengine.module.entities.Group;
+import com.codingame.gameengine.module.entities.Text;
+import com.codingame.gameengine.module.entities.Rectangle;
+import com.codingame.gameengine.module.entities.Polygon;
+import com.codingame.gameengine.module.tooltip.TooltipModule;
+
+public class Viewer {
+
+    public static final int COLOR_BG = 0x050A10; // Dark grid bg
+    public static final int COLOR_TEXT = 0x00E5FF; // Neon Cyan
+    public static final int[] PLAYER_COLORS = { 0x0096FF, 0xFF7800 }; // Neon Blue, Neon Orange
+    // Traditional wooden pieces
+    static final int COLOR_PIECE_LIGHT = 0xE6A861; // Light oak
+    static final int COLOR_PIECE_DARK = 0x662C27;  // Dark mahogany
+
+    private final GraphicEntityModule g;
+    private final TooltipModule tooltipModule;
+    private final MultiplayerGameManager<Player> gm;
+    
+    private Map<Integer, Group> pieceGroups = new HashMap<>();
+    private Rectangle[] highlights = new Rectangle[2];
+    private Text[] lastMoveTexts = new Text[2];
+    
+    public Viewer(GraphicEntityModule g, TooltipModule tooltipModule, MultiplayerGameManager<Player> gm) {
+        this.g = g;
+        this.tooltipModule = tooltipModule;
+        this.gm = gm;
+        
+        for (int i = 0; i < 32; i++) {
+            pieceGroups.put(i, createPieceGroup(i));
+        }
+    }
+
+    private Group createPieceGroup(int id) {
+        Piece p = new Piece(id);
+        Group group = g.createGroup();
+        group.add(g.createSprite().setImage("piece_" + id + ".png")
+                .setAnchorX(0.5).setAnchorY(0.8)
+                .setBaseWidth(180).setBaseHeight(180)
+                .setX(0).setY(0));
+        
+        group.setX(-1000).setY(-1000);
+        return group;
+    }
+
+    // Isometric mathematical layout
+    private int getIsoX(double x, double y) { return (int)(960 + (x - y) * 110); }
+    private int getIsoY(double x, double y) { return (int)(540 + (x + y - 5) * 55 - 30); }
+
+    public void drawBackground() {
+        g.createRectangle().setX(0).setY(0).setWidth(1920).setHeight(1080)
+                .setFillColor(COLOR_BG).setZIndex(-30);
+                
+        // Background matrix grid (Sober)
+        for (int i = 0; i < 40; i++) {
+            g.createRectangle().setX(0).setY(i*27).setWidth(1920).setHeight(1).setFillColor(COLOR_TEXT).setAlpha(0.08).setZIndex(-29);
+            g.createRectangle().setX(i*48).setY(0).setWidth(1).setHeight(1080).setFillColor(COLOR_TEXT).setAlpha(0.08).setZIndex(-29);
+        }
+
+        g.createSprite().setImage("sci_fi_board_iso.png")
+            .setX(0).setY(0)
+            .setZIndex(-20);
+
+        for (int i = 0; i < gm.getPlayerCount(); i++) {
+            Player player = gm.getPlayer(i);
+            
+            int pX = i == 0 ? 20 : 1450;
+            g.createSprite().setImage("hud_player_frame.png")
+                .setX(pX).setY(20).setBaseWidth(450).setBaseHeight(130).setZIndex(-6);
+            
+            highlights[i] = g.createRectangle().setX(pX).setY(20).setWidth(450).setHeight(130)
+                .setFillColor(PLAYER_COLORS[i]).setAlpha(0).setZIndex(-11);
+                
+            g.createSprite().setImage(player.getAvatarToken())
+                    .setX(pX + 30).setY(35).setBaseWidth(80).setBaseHeight(80).setZIndex(-5);
+            g.createText(player.getNicknameToken())
+                    .setX(pX + 150).setY(45).setFontSize(36).setFillColor(PLAYER_COLORS[i])
+                    .setFontFamily("monospace").setZIndex(-5);
+                    
+            lastMoveTexts[i] = g.createText("WAITING...")
+                    .setX(pX + 150).setY(95).setFontSize(26).setFillColor(0xFFFFFF).setAlpha(0.8)
+                    .setFontFamily("monospace").setZIndex(-5);
+        }
+        
+
+        for (int y = 0; y < 6; y++) {
+            for (int x = 0; x < 6; x++) {
+                if ((x==0 && y==0) || (x==0 && y==5) || (x==5 && y==0) || (x==5 && y==5)) continue;
+                
+                // Invisible polygon for interaction
+                Polygon poly = g.createPolygon()
+                    .addPoint(getIsoX(x, y - 0.5), getIsoY(x, y - 0.5))
+                    .addPoint(getIsoX(x + 0.5, y), getIsoY(x + 0.5, y))
+                    .addPoint(getIsoX(x, y + 0.5), getIsoY(x, y + 0.5))
+                    .addPoint(getIsoX(x - 0.5, y), getIsoY(x - 0.5, y))
+                    .setFillColor(0x0B132B).setAlpha(0.01)
+                    .setLineColor(COLOR_TEXT).setLineWidth(3).setAlpha(0.01);
+                    
+                tooltipModule.setTooltipText(poly, "(" + x + ", " + y + ")");
+                    
+                // Front rim mask to obscure submerged piece base
+                g.createSprite().setImage("rim_" + x + "_" + y + ".png")
+                    .setX(getIsoX(x, y) - 70)
+                    .setY(getIsoY(x, y) - 30 - 40)
+                    .setZIndex(20 + (x + y) * 2 + 1);
+            }
+        }
+        
+        // UI Frame for Available Pieces (Bottom Left Extremity)
+        g.createSprite().setImage("hud_frame.png")
+            .setX(20).setY(650).setBaseWidth(450).setBaseHeight(400).setZIndex(-6);
+            
+        g.createText("AVAILABLE PIECES")
+            .setX(245).setY(690).setAnchor(0.5).setFontSize(26).setFillColor(COLOR_TEXT).setFontFamily("monospace").setZIndex(-5);
+            
+        // UI Frame for Piece to Place (Bottom Right Extremity)
+        g.createSprite().setImage("hud_frame.png")
+            .setX(1450).setY(650).setBaseWidth(450).setBaseHeight(400).setZIndex(-6);
+            
+        g.createText("PIECE TO PLACE")
+            .setX(1675).setY(690).setAnchor(0.5).setFontSize(26).setFillColor(COLOR_TEXT).setFontFamily("monospace").setZIndex(-5);
+            
+        // The frames for available pieces and piece to place are now drawn on the background image.
+    }
+
+    public void update(Board board, int pieceToPlace, int activePlayerId, String lastMove) {
+        if (activePlayerId >= 0) {
+            if (highlights.length > 0 && highlights[0] != null) highlights[0].setAlpha(activePlayerId == 0 ? 0.2 : 0);
+            if (highlights.length > 1 && highlights[1] != null) highlights[1].setAlpha(activePlayerId == 1 ? 0.2 : 0);
+            if (activePlayerId < lastMoveTexts.length && lastMoveTexts[activePlayerId] != null && lastMove != null && !lastMove.isEmpty()) {
+                lastMoveTexts[activePlayerId].setText(lastMove);
+            }
+        } else {
+            if (highlights.length > 0 && highlights[0] != null) highlights[0].setAlpha(0);
+            if (highlights.length > 1 && highlights[1] != null) highlights[1].setAlpha(0);
+        }
+        
+        for (int i = 0; i < 32; i++) {
+            Group group = pieceGroups.get(i);
+            if (i == pieceToPlace) {
+                group.setX(1675, Curve.EASE_IN_AND_OUT).setY(870, Curve.EASE_IN_AND_OUT).setScale(1.2).setZIndex(100);
+                group.setAlpha(1.0);
+            } else if (board.getAvailablePieces().contains(i)) {
+                int col = i % 8;
+                int row = i / 8;
+                double ccol = col - 3.5;
+                double crow = row - 1.5;
+                
+                int ax = 245 + (int)((ccol - crow) * 35);
+                int ay = 870 + (int)((ccol + crow) * 18);
+                group.setX(ax, Curve.EASE_IN_AND_OUT).setY(ay, Curve.EASE_IN_AND_OUT).setScale(0.5).setZIndex(50 + col + row);
+                group.setAlpha(1.0);
+            } else {
+                boolean onBoard = false;
+                for (int y = 0; y < 6; y++) {
+                    for (int x = 0; x < 6; x++) {
+                        if ((x==0 && y==0) || (x==0 && y==5) || (x==5 && y==0) || (x==5 && y==5)) continue;
+                        if (board.getPieceId(x, y) == i) {
+                            group.setX(getIsoX(x, y), Curve.EASE_IN_AND_OUT)
+                                 .setY(getIsoY(x, y) - 20, Curve.EASE_IN_AND_OUT) // lower than center for deep sinking effect
+                                 .setScale(1.0)
+                                 .setZIndex(20 + (x + y) * 2);
+                            group.setAlpha(1.0);
+                            onBoard = true;
+                        }
+                    }
+                }
+                if (!onBoard) group.setAlpha(0.0); // Hide if not available, not pieceToPlace, and not on board (failsafe)
+            }
+        }
+    }
+    
+    public void drawWinningLine(int[] lineCoords) {
+        g.commitWorldState(0.2); // Force all pieces to finish moving quickly (20% of 3000ms = 600ms)
+
+        if (lineCoords == null || lineCoords.length < 9) return;
+        
+        int type = lineCoords[0];
+        if (type == 0) {
+            int x1 = getIsoX(lineCoords[1], lineCoords[2]);
+            int y1 = getIsoY(lineCoords[1], lineCoords[2]);
+            
+            int x2 = getIsoX(lineCoords[7], lineCoords[8]);
+            int y2 = getIsoY(lineCoords[7], lineCoords[8]);
+            
+            com.codingame.gameengine.module.entities.Line l1 = g.createLine().setX(x1).setY(y1 - 30).setX2(x2).setY2(y2 - 30)
+                .setLineColor(0xFFFFFF).setLineWidth(20).setAlpha(0).setZIndex(100);
+            com.codingame.gameengine.module.entities.Line l2 = g.createLine().setX(x1).setY(y1 - 30).setX2(x2).setY2(y2 - 30)
+                .setLineColor(COLOR_TEXT).setLineWidth(40).setAlpha(0).setZIndex(99);
+                
+            g.commitEntityState(0.2, l1, l2); // Stay invisible until 0.2
+            l1.setAlpha(0.8);
+            l2.setAlpha(0.4);
+            g.commitEntityState(0.5, l1, l2); // Fade in quickly from 0.2 to 0.5. Then static pause until 1.0
+        } else if (type == 1) {
+            // It's a 2x2 square
+            // We draw a polygon over the 4 pieces
+            int topX = getIsoX(lineCoords[1] + 0.5, lineCoords[2] - 0.5);
+            int topY = getIsoY(lineCoords[1] + 0.5, lineCoords[2] - 0.5);
+            int rightX = getIsoX(lineCoords[3] + 0.5, lineCoords[4] + 0.5);
+            int rightY = getIsoY(lineCoords[3] + 0.5, lineCoords[4] + 0.5);
+            int bottomX = getIsoX(lineCoords[7] - 0.5, lineCoords[8] + 0.5);
+            int bottomY = getIsoY(lineCoords[7] - 0.5, lineCoords[8] + 0.5);
+            int leftX = getIsoX(lineCoords[5] - 0.5, lineCoords[6] - 0.5);
+            int leftY = getIsoY(lineCoords[5] - 0.5, lineCoords[6] - 0.5);
+
+            Polygon p = g.createPolygon()
+                .addPoint(topX, topY - 30)
+                .addPoint(rightX, rightY - 30)
+                .addPoint(bottomX, bottomY - 30)
+                .addPoint(leftX, leftY - 30)
+                .setFillColor(COLOR_TEXT).setAlpha(0).setZIndex(99)
+                .setLineColor(0xFFFFFF).setLineWidth(10).setLineAlpha(0);
+                
+            g.commitEntityState(0.2, p);
+            p.setAlpha(0.3);
+            p.setLineAlpha(1.0);
+            g.commitEntityState(0.5, p);
+        }
+    }
+}
+

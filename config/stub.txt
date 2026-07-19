@@ -1,0 +1,20 @@
+read myId:int
+gameloop
+read pieceToPlace:int
+loop 6 read cell0:int cell1:int cell2:int cell3:int cell4:int cell5:int
+read N:int
+loopline N availablePiece:int
+write 2 1 0
+
+STATEMENT
+Win by forming a line or a 2x2 square of 4 pieces sharing a characteristic!
+
+INPUT
+myId: Your player ID (0 or 1).
+pieceToPlace: The ID of the piece you must place (from 0 to 31).
+cell0: Row values (-1 for empty, -2 for corners, 0-31 for piece ID).
+N: Number of available pieces.
+availablePiece: ID of an available piece.
+
+OUTPUT
+x y id - Coordinates to place your piece (x y) and the ID of the piece for your opponent (id).
