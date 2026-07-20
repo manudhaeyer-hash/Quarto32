@@ -1,12 +1,10 @@
 import { GraphicEntityModule } from './entity-module/GraphicEntityModule.js';
-import { EndScreenModule } from './endscreen-module/EndScreenModule.js';
+
 import { TooltipModule } from './tooltip-module/TooltipModule.js';
 
 // GraphicEntityModule : rend tout ce que crée le GraphicEntityModule Java.
-// EndScreenModule : écran de classement final (endScreenModule.setScores(...)).
 export const modules = [
     GraphicEntityModule,
-    EndScreenModule,
     TooltipModule
 ];
 

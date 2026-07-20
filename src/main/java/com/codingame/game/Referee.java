@@ -7,7 +7,7 @@ import com.codingame.game.engine.Piece;
 import com.codingame.gameengine.core.AbstractPlayer.TimeoutException;
 import com.codingame.gameengine.core.AbstractReferee;
 import com.codingame.gameengine.core.MultiplayerGameManager;
-import com.codingame.gameengine.module.endscreen.EndScreenModule;
+
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.codingame.gameengine.module.tooltip.TooltipModule;
 import com.google.inject.Inject;
@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 public class Referee extends AbstractReferee {
     @Inject private MultiplayerGameManager<Player> gameManager;
     @Inject private GraphicEntityModule graphicEntityModule;
-    @Inject private EndScreenModule endScreenModule;
+
     @Inject private TooltipModule tooltipModule;
 
     private Board board;
@@ -197,29 +197,5 @@ public class Referee extends AbstractReferee {
         gameManager.endGame();
     }
 
-    @Override
-    public void onEnd() {
-        int n = gameManager.getPlayerCount();
-        int[] scores = new int[n];
-        String[] texts = new String[n];
-        
-        Player p0 = gameManager.getPlayer(0);
-        Player p1 = gameManager.getPlayer(1);
-        
-        for (Player p : gameManager.getPlayers()) {
-            int i = p.getIndex();
-            scores[i] = p.getScore();
-            
-            if (p.getScore() < 0) {
-                texts[i] = "Eliminated";
-            } else if (p0.getScore() == p1.getScore()) {
-                texts[i] = "Draw";
-            } else if (p.getScore() > gameManager.getPlayer((i + 1) % 2).getScore()) {
-                texts[i] = "Winner";
-            } else {
-                texts[i] = "Loser";
-            }
-        }
-        endScreenModule.setScores(scores, texts);
     }
 }
