@@ -42,6 +42,7 @@ public class Referee extends AbstractReferee {
             viewer = new Viewer(graphicEntityModule, tooltipModule, gameManager);
             viewer.drawBackground();
             viewer.update(board, pieceToPlace, -1, null);
+            viewer.drawStartCinematic();
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR IN INIT: " + e.getMessage());
             e.printStackTrace();
