@@ -196,4 +196,25 @@ public class Referee extends AbstractReferee {
         winner.setScore(1);
         gameManager.endGame();
     }
+
+    @Override
+    public void onEnd() {
+        String[] texts = new String[2];
+        Player p0 = gameManager.getPlayer(0);
+        Player p1 = gameManager.getPlayer(1);
+        
+        for (Player p : gameManager.getPlayers()) {
+            int i = p.getIndex();
+            if (p.getScore() < 0) {
+                texts[i] = "Eliminated";
+            } else if (p0.getScore() == p1.getScore()) {
+                texts[i] = "Draw";
+            } else if (p.getScore() > gameManager.getPlayer((i + 1) % 2).getScore()) {
+                texts[i] = "Winner";
+            } else {
+                texts[i] = "Loser";
+            }
+        }
+        viewer.drawEndScreen(texts);
+    }
 }

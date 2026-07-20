@@ -228,5 +228,26 @@ public class Viewer {
             g.commitEntityState(0.5, p);
         }
     }
+    
+    public void drawEndScreen(String[] endTexts) {
+        for (int i = 0; i < 2; i++) {
+            lastMoveTexts[i].setText(endTexts[i]);
+            if (endTexts[i].equals("Winner")) {
+                lastMoveTexts[i].setFillColor(0xFFD700).setFontSize(40).setY(90);
+            } else if (endTexts[i].equals("Loser") || endTexts[i].equals("Eliminated")) {
+                lastMoveTexts[i].setFillColor(0x888888).setFontSize(30).setY(95);
+            } else { // Draw
+                lastMoveTexts[i].setFillColor(0xAAAAAA).setFontSize(36).setY(90);
+            }
+        }
+        
+        com.codingame.gameengine.module.entities.Sprite logo = g.createSprite().setImage("logo.png")
+            .setAnchor(0.5).setX(960).setY(400).setScale(0).setAlpha(0).setZIndex(1000);
+            
+        g.commitEntityState(0.2, logo, lastMoveTexts[0], lastMoveTexts[1]);
+        
+        logo.setScale(1.0).setAlpha(1.0);
+        g.commitEntityState(1.0, logo);
+    }
 }
 
