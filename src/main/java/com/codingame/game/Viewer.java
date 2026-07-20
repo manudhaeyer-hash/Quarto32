@@ -118,17 +118,17 @@ public class Viewer {
         
         // UI Frame for Available Pieces (Bottom Left Extremity)
         g.createSprite().setImage("hud_frame.png")
-            .setX(20).setY(650).setBaseWidth(450).setBaseHeight(400).setZIndex(-6);
+            .setX(20).setY(660).setBaseWidth(450).setBaseHeight(360).setZIndex(-6);
             
         g.createText("AVAILABLE PIECES")
-            .setX(245).setY(690).setAnchor(0.5).setFontSize(26).setFillColor(COLOR_TEXT).setFontFamily("monospace").setZIndex(-5);
+            .setX(245).setY(700).setAnchor(0.5).setFontSize(26).setFillColor(COLOR_TEXT).setFontFamily("monospace").setZIndex(-5);
             
         // UI Frame for Piece to Place (Bottom Right Extremity)
         g.createSprite().setImage("hud_frame.png")
-            .setX(1450).setY(650).setBaseWidth(450).setBaseHeight(400).setZIndex(-6);
+            .setX(1450).setY(660).setBaseWidth(450).setBaseHeight(360).setZIndex(-6);
             
         g.createText("PIECE TO PLACE")
-            .setX(1675).setY(690).setAnchor(0.5).setFontSize(26).setFillColor(COLOR_TEXT).setFontFamily("monospace").setZIndex(-5);
+            .setX(1675).setY(700).setAnchor(0.5).setFontSize(26).setFillColor(COLOR_TEXT).setFontFamily("monospace").setZIndex(-5);
             
         // The frames for available pieces and piece to place are now drawn on the background image.
     }
@@ -148,7 +148,7 @@ public class Viewer {
         for (int i = 0; i < 32; i++) {
             Group group = pieceGroups.get(i);
             if (i == pieceToPlace) {
-                group.setX(1675, Curve.EASE_IN_AND_OUT).setY(880, Curve.EASE_IN_AND_OUT).setScale(1.6).setZIndex(100);
+                group.setX(1675, Curve.EASE_IN_AND_OUT).setY(840, Curve.EASE_IN_AND_OUT).setScale(1.6).setZIndex(100);
                 group.setAlpha(1.0);
             } else if (board.getAvailablePieces().contains(i)) {
                 int col = i % 8;
@@ -157,7 +157,7 @@ public class Viewer {
                 double crow = row - 1.5;
                 
                 int ax = 245 + (int)((ccol - crow) * 35);
-                int ay = 870 + (int)((ccol + crow) * 18);
+                int ay = 850 + (int)((ccol + crow) * 18);
                 group.setX(ax, Curve.EASE_IN_AND_OUT).setY(ay, Curve.EASE_IN_AND_OUT).setScale(0.5).setZIndex(50 + col + row);
                 group.setAlpha(1.0);
             } else {
