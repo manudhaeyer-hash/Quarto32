@@ -196,6 +196,4 @@ public class Referee extends AbstractReferee {
         winner.setScore(1);
         gameManager.endGame();
     }
-
-    }
 }
