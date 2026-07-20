@@ -205,14 +205,14 @@ public class Viewer {
         } else if (type == 1) {
             // It's a 2x2 square
             // We draw a polygon over the 4 pieces
-            int topX = getIsoX(lineCoords[1] + 0.5, lineCoords[2] - 0.5);
-            int topY = getIsoY(lineCoords[1] + 0.5, lineCoords[2] - 0.5);
-            int rightX = getIsoX(lineCoords[3] + 0.5, lineCoords[4] + 0.5);
-            int rightY = getIsoY(lineCoords[3] + 0.5, lineCoords[4] + 0.5);
-            int bottomX = getIsoX(lineCoords[7] - 0.5, lineCoords[8] + 0.5);
-            int bottomY = getIsoY(lineCoords[7] - 0.5, lineCoords[8] + 0.5);
-            int leftX = getIsoX(lineCoords[5] - 0.5, lineCoords[6] - 0.5);
-            int leftY = getIsoY(lineCoords[5] - 0.5, lineCoords[6] - 0.5);
+            int topX = getIsoX(lineCoords[1] - 0.5, lineCoords[2] - 0.5);
+            int topY = getIsoY(lineCoords[1] - 0.5, lineCoords[2] - 0.5);
+            int rightX = getIsoX(lineCoords[3] + 0.5, lineCoords[4] - 0.5);
+            int rightY = getIsoY(lineCoords[3] + 0.5, lineCoords[4] - 0.5);
+            int bottomX = getIsoX(lineCoords[7] + 0.5, lineCoords[8] + 0.5);
+            int bottomY = getIsoY(lineCoords[7] + 0.5, lineCoords[8] + 0.5);
+            int leftX = getIsoX(lineCoords[5] - 0.5, lineCoords[6] + 0.5);
+            int leftY = getIsoY(lineCoords[5] - 0.5, lineCoords[6] + 0.5);
 
             Polygon p = g.createPolygon()
                 .addPoint(topX, topY - 30)
