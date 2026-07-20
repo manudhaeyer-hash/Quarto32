@@ -10,18 +10,18 @@
     <div class="statement-rules-content"><p>Ce jeu est une variante du célèbre jeu de plateau <a href="https://fr.wikipedia.org/wiki/Quarto" target="_blank">Quarto</a>. Les différences majeures dans ce puzzle sont les suivantes :
         <br><br>- Le plateau est une grille 6x6 avec les coins retirés (32 cases) au lieu d'une grille 4x4 (16 cases).
         <br>- Il y a 32 pièces uniques au lieu de 16.
-        <br>- Les pièces possèdent <strong>5 caractéristiques</strong> au lieu de 4 (Clair/Foncé, Grand/Petit, Carré/Rond, Plein/Creux, et Lumineux/Sombre).
+        <br>- Les pièces possèdent <strong>5 caractéristiques</strong> au lieu de 4 (Clair/Foncé, Grand/Petit, Carré/Rond, Plein/Creux, et Allumé/Éteint).
         <br>- Vous pouvez également gagner en formant un carré 2x2 (Règle avancée de Quarto) ou en ayant le plus de points de regroupement (clustering) si le plateau est plein.</p>
         <p>Chaque pièce possède donc <strong>5 caractéristiques</strong> encodées sous la forme d'un entier de 5 bits (0 à 31) :
-        <br><br>- Bit 4 (Valeur 16) : Coeur (0=Sombre, 1=Lumineux)
+        <br>- Bit 4 (Valeur 16) : Coeur (0=Éteint, 1=Allumé)
         <br>- Bit 3 (Valeur 8) : Taille (0=Petit, 1=Grand)
-        <br>- Bit 2 (Valeur 4) : Couleur (0=Clair, 1=Foncé)
+        <br>- Bit 2 (Valeur 4) : Couleur (0=Clair [Jaune], 1=Foncé [Violet])
         <br>- Bit 1 (Valeur 2) : Forme (0=Rond, 1=Carré)
         <br>- Bit 0 (Valeur 1) : Trou (0=Plein, 1=Creux)
         <br><br>
         <strong>Exemples de pièces :</strong>
-        <br>• La pièce <const>2</const> (Binaire <code>00010</code>) est Sombre (0), Petite (0), Claire (0), <strong>Carrée</strong> (1), Pleine (0).
-        <br>• La pièce <const>29</const> (Binaire <code>11101</code>) est <strong>Lumineuse</strong> (1), <strong>Grande</strong> (1), <strong>Foncée</strong> (1), Ronde (0), <strong>Creuse</strong> (1).
+        <br>• La pièce <const>2</const> (Binaire <code>00010</code>) est Éteinte (0), Petite (0), Claire (0), <strong>Carrée</strong> (1), Pleine (0).
+        <br>• La pièce <const>29</const> (Binaire <code>11101</code>) est <strong>Allumée</strong> (1), <strong>Grande</strong> (1), <strong>Foncée</strong> (1), Ronde (0), <strong>Creuse</strong> (1).
         <br><br>Le jeu se joue au tour par tour. Pour assurer des parties variées, <strong>la toute première pièce est choisie aléatoirement par le jeu</strong> et donnée au Joueur 0. À son tour, le joueur actif doit placer la pièce qu'on lui a donnée sur une case vide du plateau, puis choisir une nouvelle pièce pour la donner à son adversaire. Au tout dernier tour, le joueur se contente de placer la dernière pièce restante.</p>
         <p><strong>Score de Départage (Clustering) :</strong> Si le plateau se remplit complètement sans qu'il y ait de vainqueur, un score de départage détermine le gagnant. Les joueurs gagnent 1 point de départage pour chaque caractéristique partagée entre la pièce qu'ils viennent de poser et ses voisines directes (orthogonales et diagonales). Le joueur avec le plus haut score de départage remporte la victoire.</p></div>
   </div>

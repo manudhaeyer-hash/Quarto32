@@ -88,7 +88,7 @@ public class Viewer {
                     .setFontFamily("monospace").setZIndex(-5);
                     
             lastMoveTexts[i] = g.createText("WAITING...")
-                    .setX(pX + 150).setY(95).setFontSize(26).setFillColor(0xFFFFFF).setAlpha(0.8)
+                    .setX(pX + 150).setY(95).setFontSize(30).setFillColor(0xFFFFFF).setAlpha(0.8)
                     .setFontFamily("monospace").setZIndex(-5);
         }
         
