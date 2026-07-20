@@ -241,13 +241,14 @@ public class Viewer {
             }
         }
         
-        com.codingame.gameengine.module.entities.Sprite logo = g.createSprite().setImage("logo.png")
-            .setAnchor(0.5).setX(960).setY(400).setScale(0).setAlpha(0).setZIndex(1000);
+        // Temporarily removed the logo for the preview
+        // com.codingame.gameengine.module.entities.Sprite logo = g.createSprite().setImage("logo.png")
+        //    .setAnchor(0.5).setX(960).setY(400).setScale(0).setAlpha(0).setZIndex(1000);
             
-        g.commitEntityState(0.2, logo, lastMoveTexts[0], lastMoveTexts[1]);
+        g.commitEntityState(0.2, lastMoveTexts[0], lastMoveTexts[1]);
         
-        logo.setScale(1.0).setAlpha(1.0);
-        g.commitEntityState(1.0, logo);
+        // logo.setScale(1.0).setAlpha(1.0);
+        // g.commitEntityState(1.0, logo);
     }
 }
 
