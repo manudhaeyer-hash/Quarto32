@@ -167,6 +167,7 @@ public class Referee extends AbstractReferee {
             Player opponent = gameManager.getPlayer((turn) % 2);
             opponent.setScore(0);
             gameManager.addToGameSummary(activePlayer.getNicknameToken() + " completed a line or square of 4 and wins!");
+            triggerEndScreen();
             gameManager.setFrameDuration(3000); // 1s for the move + 1s for the highlighting
             gameManager.endGame();
         } else if (board.getAvailablePieces().isEmpty() && pieceToPlace == -1) {
@@ -187,6 +188,7 @@ public class Referee extends AbstractReferee {
                 gameManager.addToGameSummary("It's a perfect tie!");
             }
             
+            triggerEndScreen();
             gameManager.endGame();
         }
     }
@@ -194,11 +196,11 @@ public class Referee extends AbstractReferee {
     private void endGame(Player loser) {
         Player winner = gameManager.getPlayer((loser.getIndex() + 1) % 2);
         winner.setScore(1);
+        triggerEndScreen();
         gameManager.endGame();
     }
 
-    @Override
-    public void onEnd() {
+    private void triggerEndScreen() {
         String[] texts = new String[2];
         Player p0 = gameManager.getPlayer(0);
         Player p1 = gameManager.getPlayer(1);
