@@ -169,7 +169,6 @@ public class Referee extends AbstractReferee {
             opponent.setScore(0);
             gameManager.addToGameSummary(activePlayer.getNicknameToken() + " completed a line or square of 4 and wins!");
             triggerEndScreen();
-            gameManager.setFrameDuration(3000); // 1s for the move + 1s for the highlighting
             gameManager.endGame();
         } else if (board.getAvailablePieces().isEmpty() && pieceToPlace == -1) {
             Player p0 = gameManager.getPlayer(0);
@@ -218,6 +217,7 @@ public class Referee extends AbstractReferee {
                 texts[i] = "Loser";
             }
         }
+        gameManager.setFrameDuration(4000); // 4 seconds for end screen cinematic
         viewer.drawEndScreen(texts);
     }
 }

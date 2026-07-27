@@ -12,6 +12,7 @@ import com.codingame.gameengine.module.entities.Group;
 import com.codingame.gameengine.module.entities.Text;
 import com.codingame.gameengine.module.entities.Rectangle;
 import com.codingame.gameengine.module.entities.Polygon;
+import com.codingame.gameengine.module.entities.Sprite;
 import com.codingame.gameengine.module.tooltip.TooltipModule;
 
 public class Viewer {
@@ -30,6 +31,10 @@ public class Viewer {
     private Map<Integer, Group> pieceGroups = new HashMap<>();
     private Rectangle[] highlights = new Rectangle[2];
     private Text[] lastMoveTexts = new Text[2];
+    
+    private Group[] playerHuds = new Group[2];
+    private Sprite[] bottomFrames = new Sprite[2];
+    private Text[] bottomTexts = new Text[2];
     
     public Viewer(GraphicEntityModule g, TooltipModule tooltipModule, MultiplayerGameManager<Player> gm) {
         this.g = g;
@@ -75,21 +80,25 @@ public class Viewer {
             Player player = gm.getPlayer(i);
             
             int pX = i == 0 ? 20 : 1450;
-            g.createSprite().setImage("hud_player_frame.png")
-                .setX(pX).setY(20).setBaseWidth(450).setBaseHeight(130).setZIndex(-6);
+            playerHuds[i] = g.createGroup().setX(pX).setY(20).setZIndex(-6);
             
-            highlights[i] = g.createRectangle().setX(pX).setY(20).setWidth(450).setHeight(130)
-                .setFillColor(PLAYER_COLORS[i]).setAlpha(0).setZIndex(-11);
+            playerHuds[i].add(g.createSprite().setImage("hud_player_frame.png")
+                .setX(0).setY(0).setBaseWidth(450).setBaseHeight(130));
+            
+            highlights[i] = g.createRectangle().setX(0).setY(0).setWidth(450).setHeight(130)
+                .setFillColor(PLAYER_COLORS[i]).setAlpha(0);
+            playerHuds[i].add(highlights[i]);
                 
-            g.createSprite().setImage(player.getAvatarToken())
-                    .setX(pX + 30).setY(35).setBaseWidth(80).setBaseHeight(80).setZIndex(-5);
-            g.createText(player.getNicknameToken())
-                    .setX(pX + 150).setY(45).setFontSize(36).setFillColor(PLAYER_COLORS[i])
-                    .setFontFamily("monospace").setZIndex(-5);
+            playerHuds[i].add(g.createSprite().setImage(player.getAvatarToken())
+                    .setX(30).setY(15).setBaseWidth(80).setBaseHeight(80));
+            playerHuds[i].add(g.createText(player.getNicknameToken())
+                    .setX(150).setY(25).setFontSize(36).setFillColor(PLAYER_COLORS[i])
+                    .setFontFamily("monospace"));
                     
             lastMoveTexts[i] = g.createText("WAITING...")
-                    .setX(pX + 150).setY(95).setFontSize(36).setFillColor(0xFFFFFF).setAlpha(0.8)
-                    .setFontFamily("monospace").setZIndex(-5);
+                    .setX(150).setY(75).setFontSize(36).setFillColor(0xFFFFFF).setAlpha(0.8)
+                    .setFontFamily("monospace");
+            playerHuds[i].add(lastMoveTexts[i]);
         }
         
 
@@ -117,17 +126,17 @@ public class Viewer {
         }
         
         // UI Frame for Available Pieces (Bottom Left Extremity)
-        g.createSprite().setImage("hud_frame.png")
+        bottomFrames[0] = g.createSprite().setImage("hud_frame.png")
             .setX(20).setY(700).setBaseWidth(450).setBaseHeight(360).setZIndex(-6);
             
-        g.createText("AVAILABLE PIECES")
+        bottomTexts[0] = g.createText("AVAILABLE PIECES")
             .setX(245).setY(740).setAnchor(0.5).setFontSize(26).setFillColor(COLOR_TEXT).setFontFamily("monospace").setZIndex(-5);
             
         // UI Frame for Piece to Place (Bottom Right Extremity)
-        g.createSprite().setImage("hud_frame.png")
+        bottomFrames[1] = g.createSprite().setImage("hud_frame.png")
             .setX(1450).setY(700).setBaseWidth(450).setBaseHeight(360).setZIndex(-6);
             
-        g.createText("PIECE TO PLACE")
+        bottomTexts[1] = g.createText("PIECE TO PLACE")
             .setX(1675).setY(740).setAnchor(0.5).setFontSize(26).setFillColor(COLOR_TEXT).setFontFamily("monospace").setZIndex(-5);
             
         // The frames for available pieces and piece to place are now drawn on the background image.
@@ -230,17 +239,51 @@ public class Viewer {
     }
     
     public void drawEndScreen(String[] endTexts) {
+        int winnerIndex = -1;
         for (int i = 0; i < 2; i++) {
             lastMoveTexts[i].setText(endTexts[i]);
             if (endTexts[i].equals("Winner")) {
-                lastMoveTexts[i].setFillColor(0xFFD700).setFontSize(40).setY(90);
+                winnerIndex = i;
+                lastMoveTexts[i].setFillColor(0xFFD700).setFontSize(40).setY(70);
             } else if (endTexts[i].equals("Loser") || endTexts[i].equals("Eliminated")) {
-                lastMoveTexts[i].setFillColor(0x888888).setFontSize(30).setY(95);
+                lastMoveTexts[i].setFillColor(0x888888).setFontSize(30).setY(75);
             } else { // Draw
-                lastMoveTexts[i].setFillColor(0xAAAAAA).setFontSize(36).setY(90);
+                lastMoveTexts[i].setFillColor(0xAAAAAA).setFontSize(36).setY(70);
             }
         }
-        g.commitEntityState(0.2, lastMoveTexts[0], lastMoveTexts[1]);
+        
+        // Move players
+        if (winnerIndex == 1) { // Player 1 (Right) won
+            playerHuds[1].setX(20, Curve.EASE_IN_AND_OUT).setY(20, Curve.EASE_IN_AND_OUT);
+            playerHuds[0].setX(20, Curve.EASE_IN_AND_OUT).setY(160, Curve.EASE_IN_AND_OUT);
+        } else { // Player 0 won, or Draw
+            playerHuds[0].setX(20, Curve.EASE_IN_AND_OUT).setY(20, Curve.EASE_IN_AND_OUT);
+            playerHuds[1].setX(20, Curve.EASE_IN_AND_OUT).setY(160, Curve.EASE_IN_AND_OUT);
+        }
+        
+        for (int i=0; i<2; i++) {
+            bottomFrames[i].setAlpha(0);
+            bottomTexts[i].setAlpha(0);
+        }
+        
+        for (int i = 0; i < 32; i++) {
+            Group piece = pieceGroups.get(i);
+            if (piece.getY() > 700) {
+                piece.setAlpha(0);
+                g.commitEntityState(0.5, piece); // 2 seconds out of 4 seconds frame = 0.5
+            }
+        }
+        
+        g.commitEntityState(0.5, playerHuds[0], playerHuds[1], bottomFrames[0], bottomFrames[1], bottomTexts[0], bottomTexts[1], lastMoveTexts[0], lastMoveTexts[1]);
+        
+        // Logo appears after 3s (0.75), fades in to 4s (1.0)
+        Sprite logo = g.createSprite().setImage("logo.png")
+            .setAnchor(0.5).setX(960).setY(400).setScale(1).setAlpha(0).setZIndex(1000);
+            
+        g.commitEntityState(0.75, logo); // Hidden until 3s
+        
+        logo.setAlpha(1.0);
+        g.commitEntityState(1.0, logo); // Fades in completely by the end
     }
 
     public void drawStartCinematic() {
