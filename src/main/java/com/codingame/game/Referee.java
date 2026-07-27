@@ -168,7 +168,7 @@ public class Referee extends AbstractReferee {
             Player opponent = gameManager.getPlayer((turn) % 2);
             opponent.setScore(0);
             gameManager.addToGameSummary(activePlayer.getNicknameToken() + " completed a line or square of 4 and wins!");
-            triggerEndScreen();
+            triggerEndScreen(false);
             gameManager.endGame();
         } else if (board.getAvailablePieces().isEmpty() && pieceToPlace == -1) {
             Player p0 = gameManager.getPlayer(0);
@@ -188,7 +188,7 @@ public class Referee extends AbstractReferee {
                 gameManager.addToGameSummary("It's a perfect tie!");
             }
             
-            triggerEndScreen();
+            triggerEndScreen(true);
             gameManager.endGame();
         }
     }
@@ -196,25 +196,27 @@ public class Referee extends AbstractReferee {
     private void endGame(Player loser) {
         Player winner = gameManager.getPlayer((loser.getIndex() + 1) % 2);
         winner.setScore(1);
-        triggerEndScreen();
+        triggerEndScreen(false);
         gameManager.endGame();
     }
 
-    private void triggerEndScreen() {
+    private void triggerEndScreen(boolean isTieBreaker) {
         String[] texts = new String[2];
         Player p0 = gameManager.getPlayer(0);
         Player p1 = gameManager.getPlayer(1);
         
         for (Player p : gameManager.getPlayers()) {
             int i = p.getIndex();
+            String pts = isTieBreaker ? " (" + p.getScore() + " pts)" : "";
+            
             if (p.getScore() < 0) {
                 texts[i] = "Eliminated";
             } else if (p0.getScore() == p1.getScore()) {
-                texts[i] = "Draw";
+                texts[i] = "Draw" + pts;
             } else if (p.getScore() > gameManager.getPlayer((i + 1) % 2).getScore()) {
-                texts[i] = "Winner";
+                texts[i] = "Winner" + pts;
             } else {
-                texts[i] = "Loser";
+                texts[i] = "Loser" + pts;
             }
         }
         gameManager.setFrameDuration(4000); // 4 seconds for end screen cinematic
