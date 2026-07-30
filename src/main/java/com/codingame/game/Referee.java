@@ -109,17 +109,6 @@ public class Referee extends AbstractReferee {
                 action = outputs.get(0).trim();
                 String[] parts = action.split(" ");
                 
-                if (board.getAvailablePieces().isEmpty()) {
-                    if (parts.length < 2) {
-                        throw new IllegalArgumentException("Expected <x> <y>");
-                    }
-                    int x = Integer.parseInt(parts[0]);
-                    int y = Integer.parseInt(parts[1]);
-                    board.placePiece(x, y, pieceToPlace);
-                    tieBreakerScore[activePlayer.getIndex()] += calculatePlacementScore(x, y, pieceToPlace);
-                    gameManager.addToGameSummary(activePlayer.getNicknameToken() + " placed piece " + pieceToPlace + " at " + x + " " + y);
-                    pieceToPlace = -1;
-                } else {
                     if (parts.length < 3) {
                         throw new IllegalArgumentException("Expected <x> <y> <id>");
                     }
@@ -134,7 +123,6 @@ public class Referee extends AbstractReferee {
                     board.choosePiece(id);
                     pieceToPlace = id;
                     gameManager.addToGameSummary(activePlayer.getNicknameToken() + " chose piece " + id);
-                }
 
             } catch (TimeoutException e) {
                 String msg = activePlayer.getNicknameToken() + " timed out!";
@@ -170,26 +158,59 @@ public class Referee extends AbstractReferee {
             gameManager.addToGameSummary(activePlayer.getNicknameToken() + " completed a line or square of 4 and wins!");
             triggerEndScreen(false);
             gameManager.endGame();
-        } else if (board.getAvailablePieces().isEmpty() && pieceToPlace == -1) {
-            Player p0 = gameManager.getPlayer(0);
-            Player p1 = gameManager.getPlayer(1);
-            p0.setScore(tieBreakerScore[0]);
-            p1.setScore(tieBreakerScore[1]);
-            
-            gameManager.addToGameSummary("Board is full. Tie-breaker scores applied!");
-            gameManager.addToGameSummary(String.format("%s: %d points", p0.getNicknameToken(), tieBreakerScore[0]));
-            gameManager.addToGameSummary(String.format("%s: %d points", p1.getNicknameToken(), tieBreakerScore[1]));
-            
-            if (tieBreakerScore[0] > tieBreakerScore[1]) {
-                gameManager.addToGameSummary(p0.getNicknameToken() + " wins the tie-breaker!");
-            } else if (tieBreakerScore[1] > tieBreakerScore[0]) {
-                gameManager.addToGameSummary(p1.getNicknameToken() + " wins the tie-breaker!");
-            } else {
-                gameManager.addToGameSummary("It's a perfect tie!");
+        } else if (board.getAvailablePieces().isEmpty() && pieceToPlace != -1) {
+            // AUTOMATIC PLAY
+            // Find the last empty spot
+            int lastX = -1, lastY = -1;
+            for (int y = 0; y < 6; y++) {
+                for (int x = 0; x < 6; x++) {
+                    if (board.isCorner(x, y)) continue;
+                    if (board.getPieceId(x, y) == -1) {
+                        lastX = x;
+                        lastY = y;
+                        break;
+                    }
+                }
             }
+            // opponent places the piece
+            Player opponent = gameManager.getPlayer(turn % 2);
+            board.placePiece(lastX, lastY, pieceToPlace);
+            tieBreakerScore[opponent.getIndex()] += calculatePlacementScore(lastX, lastY, pieceToPlace);
+            gameManager.addToGameSummary(opponent.getNicknameToken() + " automatically placed the last piece " + pieceToPlace + " at " + lastX + " " + lastY);
             
-            triggerEndScreen(true);
-            gameManager.endGame();
+            // update viewer for this automatic move
+            viewer.update(board, -1, opponent.getIndex(), lastX + " " + lastY);
+            
+            // Now check if this last move created a winning line
+            winningLine = board.getWinningLine();
+            if (winningLine != null) {
+                viewer.drawWinningLine(winningLine);
+                opponent.setScore(1000);
+                activePlayer.setScore(0);
+                gameManager.addToGameSummary(opponent.getNicknameToken() + " completed a line or square of 4 and wins!");
+                triggerEndScreen(false);
+                gameManager.endGame();
+            } else {
+                Player p0 = gameManager.getPlayer(0);
+                Player p1 = gameManager.getPlayer(1);
+                p0.setScore(tieBreakerScore[0]);
+                p1.setScore(tieBreakerScore[1]);
+                
+                gameManager.addToGameSummary("Board is full. Tie-breaker scores applied!");
+                gameManager.addToGameSummary(String.format("%s: %d points", p0.getNicknameToken(), tieBreakerScore[0]));
+                gameManager.addToGameSummary(String.format("%s: %d points", p1.getNicknameToken(), tieBreakerScore[1]));
+                
+                if (tieBreakerScore[0] > tieBreakerScore[1]) {
+                    gameManager.addToGameSummary(p0.getNicknameToken() + " wins the tie-breaker!");
+                } else if (tieBreakerScore[1] > tieBreakerScore[0]) {
+                    gameManager.addToGameSummary(p1.getNicknameToken() + " wins the tie-breaker!");
+                } else {
+                    gameManager.addToGameSummary("It's a perfect tie!");
+                }
+                
+                triggerEndScreen(true);
+                gameManager.endGame();
+            }
         }
     }
 
