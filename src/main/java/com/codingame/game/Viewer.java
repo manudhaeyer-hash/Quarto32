@@ -253,13 +253,19 @@ public class Viewer {
         int winnerIndex = -1;
         for (int i = 0; i < 2; i++) {
             lastMoveTexts[i].setText(endTexts[i]);
+            
+            boolean hasPts = endTexts[i].contains("pts");
+            int winSize = hasPts ? 30 : 36;
+            int loseSize = hasPts ? 24 : 26;
+            int drawSize = hasPts ? 26 : 30;
+            
             if (endTexts[i].startsWith("Winner")) {
                 winnerIndex = i;
-                lastMoveTexts[i].setFillColor(0xFFD700).setFontSize(36).setY(70);
+                lastMoveTexts[i].setFillColor(0xFFD700).setFontSize(winSize).setY(70);
             } else if (endTexts[i].startsWith("Loser") || endTexts[i].equals("Eliminated")) {
-                lastMoveTexts[i].setFillColor(0x888888).setFontSize(26).setY(75);
+                lastMoveTexts[i].setFillColor(0x888888).setFontSize(loseSize).setY(75);
             } else { // Draw
-                lastMoveTexts[i].setFillColor(0xAAAAAA).setFontSize(30).setY(70);
+                lastMoveTexts[i].setFillColor(0xAAAAAA).setFontSize(drawSize).setY(70);
             }
         }
         
