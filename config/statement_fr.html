@@ -8,23 +8,29 @@
   <div class="statement-section statement-rules">
     <h2><span class="icon icon-rules">&nbsp;</span><span>Règles</span></h2>
     <div class="statement-rules-content"><p>Ce jeu est une variante du célèbre jeu de plateau <a href="https://fr.wikipedia.org/wiki/Quarto" target="_blank">Quarto</a>. Les différences majeures dans ce puzzle sont les suivantes :
-        <br><br>- Le plateau est une grille 6x6 avec les coins retirés (32 cases) au lieu d'une grille 4x4 (16 cases).
-        <br>- Il y a 32 pièces uniques au lieu de 16.
-        <br>- Les pièces possèdent une caractéristique supplémentaire : Allumé/Éteint.
-        <br>- Vous pouvez également gagner en formant un carré 2x2 (Règle avancée de Quarto, côtés horizontaux et verticaux uniquement) ou en ayant le plus de points de regroupement (clustering) si le plateau est plein.</p>
+        <ul>
+          <li>Le plateau est une grille 6x6 avec les coins retirés (32 cases) au lieu d'une grille 4x4 (16 cases).</li>
+          <li>Il y a 32 pièces uniques au lieu de 16.</li>
+          <li>Les pièces possèdent une caractéristique supplémentaire : Allumé/Éteint.</li>
+          <li>Vous pouvez également gagner en formant un carré 2x2 (Règle avancée de Quarto, côtés horizontaux et verticaux uniquement) ou en ayant le plus de points de regroupement (clustering) si le plateau est plein.</li>
+        </ul></p>
         <p>Le plateau utilise un système de coordonnées (X, Y) où (0,0) est la case en haut à gauche. X augmente vers la droite, et Y augmente vers le bas. Les coins en (0,0), (5,0), (0,5) et (5,5) sont injouables.</p>
         <p>Chaque pièce possède un ID unique de 0 à 31, qui est un entier de 5 bits encodant ses 5 caractéristiques :
-        <br>- Bit 4 (Valeur 16) : Coeur (<const>0</const>=Éteint, <const>1</const>=Allumé)
-        <br>- Bit 3 (Valeur 8) : Taille (<const>0</const>=Petit, <const>1</const>=Grand)
-        <br>- Bit 2 (Valeur 4) : Couleur (<const>0</const>=Clair [Jaune], <const>1</const>=Foncé [Bleu])
-        <br>- Bit 1 (Valeur 2) : Forme (<const>0</const>=Rond, <const>1</const>=Carré)
-        <br>- Bit 0 (Valeur 1) : Trou (<const>0</const>=Plein, <const>1</const>=Creux)
+        <ul>
+          <li>Bit 4 (Valeur <const>16</const>) : Coeur (<const>0</const>=Éteint, <const>1</const>=Allumé)</li>
+          <li>Bit 3 (Valeur <const>8</const>) : Taille (<const>0</const>=Petit, <const>1</const>=Grand)</li>
+          <li>Bit 2 (Valeur <const>4</const>) : Couleur (<const>0</const>=Clair [Jaune], <const>1</const>=Foncé [Bleu])</li>
+          <li>Bit 1 (Valeur <const>2</const>) : Forme (<const>0</const>=Rond, <const>1</const>=Carré)</li>
+          <li>Bit 0 (Valeur <const>1</const>) : Trou (<const>0</const>=Plein, <const>1</const>=Creux)</li>
+        </ul>
         <br><br>
         <strong>Exemples de pièces :</strong>
-        <br>• La pièce <const>2</const> (Binaire <code>00010</code>) est Éteinte (<const>0</const>), Petite (<const>0</const>), Claire (<const>0</const>), <strong>Carrée</strong> (<const>1</const>), Pleine (<const>0</const>).
-        <br>• La pièce <const>29</const> (Binaire <code>11101</code>) est <strong>Allumée</strong> (<const>1</const>), <strong>Grande</strong> (<const>1</const>), <strong>Foncée</strong> (<const>1</const>), Ronde (<const>0</const>), <strong>Creuse</strong> (<const>1</const>).
+        <ul>
+          <li>La pièce <const>2</const> (Binaire <code>00010</code>) est Éteinte (<const>0</const>), Petite (<const>0</const>), Claire (<const>0</const>), <strong>Carrée</strong> (<const>1</const>), Pleine (<const>0</const>).</li>
+          <li>La pièce <const>29</const> (Binaire <code>11101</code>) est <strong>Allumée</strong> (<const>1</const>), <strong>Grande</strong> (<const>1</const>), <strong>Foncée</strong> (<const>1</const>), Ronde (<const>0</const>), <strong>Creuse</strong> (<const>1</const>).</li>
+        </ul>
         <br><br>Les joueurs jouent à tour de rôle. Pour assurer des parties variées, <strong>la toute première pièce est choisie aléatoirement par le jeu</strong> et donnée au Joueur 0. À son tour, le joueur actif doit placer la pièce qu'on lui a donnée sur une case vide du plateau, puis choisir une nouvelle pièce pour la donner à son adversaire. La toute dernière pièce restante est placée automatiquement sur la dernière case vide par le moteur du jeu.</p>
-        <p><strong>Score de Départage (Clustering) :</strong> Si le plateau se remplit complètement sans qu'il y ait de vainqueur, un score de départage détermine le gagnant. Les joueurs gagnent 1 point de départage pour chaque caractéristique partagée entre la pièce qu'ils ont placée et ses voisines directes (orthogonales et diagonales). Le joueur avec le plus haut score de départage remporte la victoire.</p></div>
+        <p><strong>Score de Départage (Clustering) :</strong> Si le plateau se remplit complètement sans qu'il y ait de vainqueur, un score de départage détermine le gagnant. Les points sont attribués de manière incrémentale tout au long de la partie. Chaque fois que vous placez une pièce, vous gagnez immédiatement 1 point de départage pour chaque caractéristique partagée avec ses voisines directes déjà placées (orthogonales et diagonales). Le joueur avec le plus haut score de départage remporte la victoire.</p></div>
   </div>
 
   <br /><div class="statement-victory-conditions"><div class="icon victory"></div><div class="blk"><div class="title">Conditions de victoire</div><div class="text"><ul style="padding-bottom:0"><li>Placer une pièce qui forme une ligne horizontale, verticale ou diagonale de 4 pièces partageant au moins une caractéristique.</li><li>Placer une pièce qui forme un carré 2x2 de 4 pièces partageant au moins une caractéristique (Règle du Quarto Avancé).</li><li>Avoir le plus grand score de départage (Clustering) si le plateau est entièrement rempli.</li></ul></div></div></div>
@@ -40,7 +46,7 @@
     <div class="blk"><div class="title">Sortie pour un tour de jeu</div><div class="text"><p><span class="statement-lineno">Une seule ligne</span> contenant 3 entiers séparés par des espaces : <var>x</var> <var>y</var> <var>id</var>
         <br><br><var>x</var>, <var>y</var> : Coordonnées (<const>0</const> à <const>5</const>) où placer la pièce qui vous a été donnée.
         <br><var>id</var> : L'ID de la pièce que vous souhaitez donner à votre adversaire.
-        <br><br><strong>Exemple :</strong> <action>2 1 0</action> (Place la pièce courante en 2,1 et donne la pièce <const>0</const> à l'adversaire)</p></div></div>
+        <br><br><strong>Exemple :</strong> <action>2 1 0</action> (Place la pièce courante en (2,1) et donne la pièce <const>0</const> à l'adversaire)</p></div></div>
     <div class="blk"><div class="title">Contraintes</div><div class="text"><p>Temps de réponse pour le premier tour ≤ <const>1000</const> ms<br>Temps de réponse pour les tours suivants ≤ <const>50</const> ms</p></div></div>
   </div>
   

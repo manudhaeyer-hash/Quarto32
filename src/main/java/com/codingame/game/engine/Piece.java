@@ -8,6 +8,7 @@ public class Piece {
     public final boolean isHollow;
 
     public final boolean isGlowing;
+    public int placedBy = -1;
 
     public Piece(int id) {
         this.id = id;

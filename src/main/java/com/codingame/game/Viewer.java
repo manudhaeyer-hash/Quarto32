@@ -19,7 +19,7 @@ public class Viewer {
 
     public static final int COLOR_BG = 0x050A10; // Dark grid bg
     public static final int COLOR_TEXT = 0x00E5FF; // Neon Cyan
-    public static final int[] PLAYER_COLORS = { 0x0096FF, 0xFF7800 }; // Neon Blue, Neon Orange
+    public static final int[] PLAYER_COLORS = { 0xFF7800, 0x0096FF }; // Swap colors to match console
     // Traditional wooden pieces
     static final int COLOR_PIECE_LIGHT = 0xE6A861; // Light oak
     static final int COLOR_PIECE_DARK = 0x662C27;  // Dark mahogany
@@ -35,6 +35,8 @@ public class Viewer {
     private Group[] playerHuds = new Group[2];
     private Sprite[] bottomFrames = new Sprite[2];
     private Text[] bottomTexts = new Text[2];
+    
+    private Polygon[][] gridPolygons = new Polygon[6][6];
     
     public Viewer(GraphicEntityModule g, TooltipModule tooltipModule, MultiplayerGameManager<Player> gm) {
         this.g = g;
@@ -115,6 +117,7 @@ public class Viewer {
                     .setFillColor(0x0B132B).setAlpha(0.01)
                     .setLineColor(COLOR_TEXT).setLineWidth(3).setAlpha(0.01);
                     
+                gridPolygons[x][y] = poly;
                 tooltipModule.setTooltipText(poly, "(" + x + ", " + y + ")");
                     
                 // Front rim mask to obscure submerged piece base
@@ -181,6 +184,14 @@ public class Viewer {
                                  .setZIndex(20 + (x + y) * 2);
                             group.setAlpha(1.0);
                             onBoard = true;
+                            
+                            // Update Tooltip
+                            com.codingame.game.engine.Piece p = board.getPiece(x, y);
+                            String tooltip = "(" + x + ", " + y + ")\nPiece: " + i;
+                            if (p != null && p.placedBy != -1) {
+                                tooltip += "\nPlaced by: Player " + p.placedBy;
+                            }
+                            tooltipModule.setTooltipText(gridPolygons[x][y], tooltip);
                         }
                     }
                 }
@@ -238,7 +249,7 @@ public class Viewer {
         }
     }
     
-    public void drawEndScreen(String[] endTexts) {
+    public void drawEndScreen(String[] endTexts, Board board) {
         int winnerIndex = -1;
         for (int i = 0; i < 2; i++) {
             lastMoveTexts[i].setText(endTexts[i]);
@@ -268,7 +279,8 @@ public class Viewer {
         
         for (int i = 0; i < 32; i++) {
             Group piece = pieceGroups.get(i);
-            if (piece.getY() > 700) {
+            // Only hide pieces that are still available or the one currently to place
+            if (board.getAvailablePieces().contains(i) || piece.getY() > 900) {
                 piece.setAlpha(0);
                 g.commitEntityState(0.5, piece); // 2 seconds out of 4 seconds frame = 0.5
             }

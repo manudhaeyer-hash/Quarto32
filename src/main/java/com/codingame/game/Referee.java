@@ -109,14 +109,19 @@ public class Referee extends AbstractReferee {
                 action = outputs.get(0).trim();
                 String[] parts = action.split(" ");
                 
-                    if (parts.length < 3) {
-                        throw new IllegalArgumentException("Expected <x> <y> <id>");
+                    if (parts.length != 3) {
+                        throw new IllegalArgumentException("Expected exactly 3 integers: <x> <y> <id>");
                     }
-                    int x = Integer.parseInt(parts[0]);
-                    int y = Integer.parseInt(parts[1]);
-                    int id = Integer.parseInt(parts[2]);
+                    int x, y, id;
+                    try {
+                        x = Integer.parseInt(parts[0]);
+                        y = Integer.parseInt(parts[1]);
+                        id = Integer.parseInt(parts[2]);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("Non-integer input provided");
+                    }
                     
-                    board.placePiece(x, y, pieceToPlace);
+                    board.placePiece(x, y, pieceToPlace, activePlayer.getIndex());
                     tieBreakerScore[activePlayer.getIndex()] += calculatePlacementScore(x, y, pieceToPlace);
                     gameManager.addToGameSummary(activePlayer.getNicknameToken() + " placed piece " + pieceToPlace + " at " + x + " " + y);
                     
@@ -174,7 +179,7 @@ public class Referee extends AbstractReferee {
             }
             // opponent places the piece
             Player opponent = gameManager.getPlayer(turn % 2);
-            board.placePiece(lastX, lastY, pieceToPlace);
+            board.placePiece(lastX, lastY, pieceToPlace, opponent.getIndex());
             tieBreakerScore[opponent.getIndex()] += calculatePlacementScore(lastX, lastY, pieceToPlace);
             gameManager.addToGameSummary(opponent.getNicknameToken() + " automatically placed the last piece " + pieceToPlace + " at " + lastX + " " + lastY);
             
@@ -241,6 +246,6 @@ public class Referee extends AbstractReferee {
             }
         }
         gameManager.setFrameDuration(4000); // 4 seconds for end screen cinematic
-        viewer.drawEndScreen(texts);
+        viewer.drawEndScreen(texts, board);
     }
 }

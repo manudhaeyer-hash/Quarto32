@@ -40,7 +40,7 @@ public class Board {
         availablePieces.remove((Integer)pieceId);
     }
 
-    public void placePiece(int x, int y, int pieceId) throws IllegalArgumentException {
+    public void placePiece(int x, int y, int pieceId, int playerId) throws IllegalArgumentException {
         if (x < 0 || x > 5 || y < 0 || y > 5) {
             throw new IllegalArgumentException("Coordinates out of bounds: " + x + ", " + y);
         }
@@ -50,7 +50,9 @@ public class Board {
         if (grid[y][x] != null) {
             throw new IllegalArgumentException("Cell already occupied: " + x + ", " + y);
         }
-        grid[y][x] = new Piece(pieceId);
+        Piece p = new Piece(pieceId);
+        p.placedBy = playerId;
+        grid[y][x] = p;
     }
 
     public int[] getWinningLine() {

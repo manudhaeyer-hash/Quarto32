@@ -8,23 +8,29 @@
   <div class="statement-section statement-rules">
     <h2><span class="icon icon-rules">&nbsp;</span><span>Rules</span></h2>
     <div class="statement-rules-content"><p>This game is a variant of the official <a href="https://en.wikipedia.org/wiki/Quarto_(board_game)" target="_blank">Quarto</a> board game. The main differences in this puzzle are:
-        <br><br>- The board is a 6x6 grid with removed corners (32 cells) instead of 4x4 (16 cells).
-        <br>- There are 32 unique pieces instead of 16.
-        <br>- Pieces have one additional characteristic: Lit/Unlit.
-        <br>- You can also win by forming a 2x2 square (Advanced Quarto rule, horizontal and vertical sides only) or by having the most clustering points if the board fills up.</p>
+        <ul>
+          <li>The board is a 6x6 grid with removed corners (32 cells) instead of 4x4 (16 cells).</li>
+          <li>There are 32 unique pieces instead of 16.</li>
+          <li>Pieces have one additional characteristic: Lit/Unlit.</li>
+          <li>You can also win by forming a 2x2 square (Advanced Quarto rule, horizontal and vertical sides only) or by having the most clustering points if the board fills up.</li>
+        </ul></p>
         <p>The board uses an (X, Y) coordinate system where (0,0) is the top-left cell. X increases to the right, and Y increases downwards. Corners at (0,0), (5,0), (0,5), and (5,5) are non-playable.</p>
         <p>Each piece has a unique ID from 0 to 31, which is a 5-bit integer encoding its 5 characteristics:
-        <br>- Bit 4 (Value 16): Core (<const>0</const>=Unlit, <const>1</const>=Lit)
-        <br>- Bit 3 (Value 8): Size (<const>0</const>=Short, <const>1</const>=Tall)
-        <br>- Bit 2 (Value 4): Color (<const>0</const>=Light [Yellow], <const>1</const>=Dark [Blue])
-        <br>- Bit 1 (Value 2): Shape (<const>0</const>=Circle, <const>1</const>=Square)
-        <br>- Bit 0 (Value 1): Hole (<const>0</const>=Solid, <const>1</const>=Hollow)
+        <ul>
+          <li>Bit 4 (Value <const>16</const>): Core (<const>0</const>=Unlit, <const>1</const>=Lit)</li>
+          <li>Bit 3 (Value <const>8</const>): Size (<const>0</const>=Short, <const>1</const>=Tall)</li>
+          <li>Bit 2 (Value <const>4</const>): Color (<const>0</const>=Light [Yellow], <const>1</const>=Dark [Blue])</li>
+          <li>Bit 1 (Value <const>2</const>): Shape (<const>0</const>=Circle, <const>1</const>=Square)</li>
+          <li>Bit 0 (Value <const>1</const>): Hole (<const>0</const>=Solid, <const>1</const>=Hollow)</li>
+        </ul>
         <br><br>
         <strong>Examples of pieces:</strong>
-        <br>• Piece <const>2</const> (Binary <code>00010</code>) is Unlit (<const>0</const>), Short (<const>0</const>), Light (<const>0</const>), <strong>Square</strong> (<const>1</const>), Solid (<const>0</const>).
-        <br>• Piece <const>29</const> (Binary <code>11101</code>) is <strong>Lit</strong> (<const>1</const>), <strong>Tall</strong> (<const>1</const>), <strong>Dark</strong> (<const>1</const>), Circle (<const>0</const>), <strong>Hollow</strong> (<const>1</const>).
+        <ul>
+          <li>Piece <const>2</const> (Binary <code>00010</code>) is Unlit (<const>0</const>), Short (<const>0</const>), Light (<const>0</const>), <strong>Square</strong> (<const>1</const>), Solid (<const>0</const>).</li>
+          <li>Piece <const>29</const> (Binary <code>11101</code>) is <strong>Lit</strong> (<const>1</const>), <strong>Tall</strong> (<const>1</const>), <strong>Dark</strong> (<const>1</const>), Circle (<const>0</const>), <strong>Hollow</strong> (<const>1</const>).</li>
+        </ul>
         <br><br>Players alternate turns. To ensure varied games, <strong>the very first piece is chosen randomly by the game</strong> and given to Player 0. On their turn, the active player must place the piece they were given on an empty cell of the board, and then choose a new piece to give to their opponent. The very last remaining piece is automatically placed on the final empty cell by the game engine.</p>
-        <p><strong>Clustering tie-breaker:</strong> If the board fills up without any winner, a tie-breaker determines the winner. Players earn 1 tie-breaker point for every shared characteristic between the piece they placed and its directly adjacent pieces (orthogonal and diagonal). The player with the highest tie-breaker score wins.</p></div>
+        <p><strong>Clustering tie-breaker:</strong> If the board fills up without any winner, a tie-breaker determines the winner. Points are awarded incrementally during the game. Whenever you place a piece, you immediately earn 1 tie-breaker point for each characteristic it shares with its already-placed adjacent pieces (orthogonal and diagonal). The player with the highest tie-breaker score wins.</p></div>
   </div>
 
   <br /><div class="statement-victory-conditions"><div class="icon victory"></div><div class="blk"><div class="title">Victory Conditions</div><div class="text"><ul style="padding-bottom:0"><li>Place a piece that forms a horizontal, vertical, or diagonal line of 4 pieces sharing at least one characteristic.</li><li>Place a piece that forms a 2x2 square of 4 pieces sharing at least one characteristic (Advanced Quarto rule).</li><li>Have the highest Clustering Tie-Breaker score if the board is completely filled.</li></ul></div></div></div>
@@ -40,7 +46,7 @@
     <div class="blk"><div class="title">Output for one game turn</div><div class="text"><p><span class="statement-lineno">A single line</span> containing 3 space-separated integers: <var>x</var> <var>y</var> <var>id</var>
         <br><br><var>x</var>, <var>y</var> : Coordinates (<const>0</const> to <const>5</const>) where to place the piece you were given.
         <br><var>id</var> : The ID of the piece you want to give to your opponent.
-        <br><br><strong>Example :</strong> <action>2 1 0</action> (Places the current piece at 2,1 and gives piece <const>0</const> to the opponent)</p></div></div>
+        <br><br><strong>Example :</strong> <action>2 1 0</action> (Places the current piece at (2,1) and gives piece <const>0</const> to the opponent)</p></div></div>
     <div class="blk"><div class="title">Constraints</div><div class="text"><p>Response time for the first turn ≤ <const>1000</const> ms<br>Response time for subsequent turns ≤ <const>50</const> ms</p></div></div>
   </div>
   
